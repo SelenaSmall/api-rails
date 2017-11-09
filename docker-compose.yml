@@ -1,0 +1,41 @@
+version: '2'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        RAILS_ENV: development
+    image: api_app:development
+    entrypoint: bin/entry
+    command: bundle exec puma -C config/puma.rb
+    volumes:
+      - .:/var/www/api
+    env_file: development.env
+    ports:
+      - "3000:3000"
+    volumes_from:
+      - bundle
+    links:
+      - postgres
+    stdin_open: true
+    tty: true
+
+  bundle:
+    image: busybox
+    volumes:
+      - /usr/local/bundle
+
+  postgres:
+    image: postgres:9.6
+    ports:
+      - '5433:5433'
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: notasecret
+    volumes_from:
+      - postgres_data
+  postgres_data:
+    image: busybox
+    volumes:
+      - /var/lib/postgresql/data
