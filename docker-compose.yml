@@ -21,6 +21,27 @@ services:
     stdin_open: true
     tty: true
 
+  app_test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        RAILS_ENV: test
+    image: api_app:test
+    entrypoint: bin/entry
+    command: bundle exec rspec
+    volumes:
+      - .:/var/www/ivr
+    env_file: test.env
+    ports:
+      - "3000:3000"
+    volumes_from:
+      - bundle
+    links:
+      - postgres
+    stdin_open: true
+    tty: true
+
   bundle:
     image: busybox
     volumes:
